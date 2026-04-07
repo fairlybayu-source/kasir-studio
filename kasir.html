@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kasir Studio Digital</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f7f6; padding: 20px; display: flex; justify-content: center; }
+        .container { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
+        h2 { text-align: center; color: #333; }
+        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .total-box { background: #333; color: #fff; text-align: center; padding: 15px; font-size: 20px; font-weight: bold; border-radius: 8px; margin-top: 10px; }
+        button { background: #007bff; color: white; border: none; font-weight: bold; cursor: pointer; }
+        button:disabled { background: #ccc; }
+        .item-list { font-size: 14px; color: #555; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Kasir Studio</h2>
+    <input type="text" id="nama" placeholder="Nama Customer" required>
+    <input type="number" id="nowa" placeholder="Nomor WA (Contoh: 0812...)">
+    
+    <label>Pilih Tema:</label>
+    <select id="tema">
+        <option>Balloons</option><option>Tahanan</option><option>Chill N Fun</option>
+        <option>Cowboy</option><option>Pool Party</option><option>Reastic Claw</option>
+        <option>Reastic Market</option><option>Warna</option>
+    </select>
+
+    <label>Pilih Paket:</label>
+    <select id="paket" onchange="hitung()">
+        <option value="0">-- Pilih Paket --</option>
+        <option value="30000">Couple - 10 Menit (30k)</option>
+        <option value="50000">Couple - 20 Menit (50k)</option>
+        <option value="50000">Ramean - 10 Menit (50k)</option>
+        <option value="70000">Ramean - 20 Menit (70k)</option>
+    </select>
+
+    <div class="item-list">
+        <label><input type="checkbox" class="addon" value="10000" data-name="Reguler" onchange="hitung()"> Reguler (+10k)</label><br>
+        <label><input type="checkbox" class="addon" value="30000" data-name="Jumbo" onchange="hitung()"> Jumbo (+30k)</label><br>
+        <label><input type="checkbox" class="addon" value="25000" data-name="Roll Film" onchange="hitung()"> Roll Film (+25k)</label><br>
+        <label><input type="checkbox" class="addon" value="25000" data-name="Ganci" onchange="hitung()"> Ganci (+25k)</label>
+    </div>
+
+    <div class="total-box" id="displayTotal">Rp 0</div>
+    <button id="btnSimpan" onclick="kirimData()">Simpan & Kirim ke Sheet</button>
+</div>
+
+<script>
+    // MASUKKAN URL WEB APP ANDA DI SINI
+    const SCRIPT_URL = "ISI_DENGAN_URL_GOOGLE_APPS_SCRIPT_ANDA";
+
+    function hitung() {
+        let total = parseInt(document.getElementById('paket').value);
+        document.querySelectorAll('.addon:checked').forEach(i => total += parseInt(i.value));
+        document.getElementById('displayTotal').innerText = "Rp " + total.toLocaleString('id-ID');
+        return total;
+    }
+
+    async function kirimData() {
+        const btn = document.getElementById('btnSimpan');
+        const data = {
+            nama: document.getElementById('nama').value,
+            nowa: document.getElementById('nowa').value,
+            tema: document.getElementById('tema').value,
+            paket: document.getElementById('paket').options[document.getElementById('paket').selectedIndex].text,
+            tambahan: Array.from(document.querySelectorAll('.addon:checked')).map(i => i.dataset.name).join(", "),
+            total: hitung()
+        };
+
+        if (!data.nama || data.paket.includes("--")) {
+            alert("Nama dan Paket harus diisi!");
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerText = "Mengirim...";
+
+        try {
+            await fetch(SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify(data)
+            });
+            alert("Data Berhasil Disimpan ke Google Sheets!");
+            location.reload(); // Refresh form
+        } catch (error) {
+            alert("Gagal mengirim data. Pastikan URL Script benar.");
+            btn.disabled = false;
+            btn.innerText = "Simpan & Kirim ke Sheet";
+        }
+    }
+</script>
+</body>
+</html>
