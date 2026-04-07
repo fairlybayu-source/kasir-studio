@@ -39,10 +39,19 @@
     </select>
 
     <div class="item-list">
-        <label><input type="checkbox" class="addon" value="10000" data-name="Reguler" onchange="hitung()"> Reguler (+10k)</label><br>
-        <label><input type="checkbox" class="addon" value="30000" data-name="Jumbo" onchange="hitung()"> Jumbo (+30k)</label><br>
-        <label><input type="checkbox" class="addon" value="25000" data-name="Roll Film" onchange="hitung()"> Roll Film (+25k)</label><br>
-        <label><input type="checkbox" class="addon" value="25000" data-name="Ganci" onchange="hitung()"> Ganci (+25k)</label>
+        <div class="item-list">
+        <label style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" class="addon" value="10000" data-name="Reguler" onchange="hitung()"> Reguler (+10k)
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" class="addon" value="30000" data-name="Jumbo" onchange="hitung()"> Jumbo (+30k)
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" class="addon" value="25000" data-name="Roll Film" onchange="hitung()"> Roll Film (+25k)
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" class="addon" value="25000" data-name="Ganci" onchange="hitung()"> Ganci (+25k)
+        </label>
     </div>
 
     <div class="total-box" id="displayTotal">Rp 0</div>
@@ -54,10 +63,16 @@
     const SCRIPT_URL = https://script.google.com/macros/s/AKfycbxcgDguxYwbv0T24LDpQHp2BhU2VtUcvPZRC5Nbw4SrDrKtZrP98-pvE1eGqjeChdqo2Q/exec;
 
     function hitung() {
-        let total = parseInt(document.getElementById('paket').value);
-        document.querySelectorAll('.addon:checked').forEach(i => total += parseInt(i.value));
+        let paket = document.getElementById('paket').value;
+        let total = parseInt(paket) || 0; // Jika paket belum dipilih, anggap 0
+        
+        document.querySelectorAll('.addon:checked').forEach(i => {
+            total += parseInt(i.value);
+        });
+        
         document.getElementById('displayTotal').innerText = "Rp " + total.toLocaleString('id-ID');
         return total;
+    }
     }
 
     async function kirimData() {
