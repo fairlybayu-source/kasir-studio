@@ -5,31 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kasir Studio Digital</title>
     <style>
-        body { font-family: sans-serif; background-color: #f4f7f6; padding: 20px; display: flex; justify-content: center; }
-        .container { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
-        h2 { text-align: center; color: #333; }
-        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        .total-box { background: #333; color: #fff; text-align: center; padding: 15px; font-size: 20px; font-weight: bold; border-radius: 8px; margin-top: 10px; }
-        button { background: #007bff; color: white; border: none; font-weight: bold; cursor: pointer; }
-        button:disabled { background: #ccc; }
-        .item-list { font-size: 14px; color: #555; margin-bottom: 10px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; padding: 20px; display: flex; justify-content: center; }
+        .container { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
+        h2 { text-align: center; color: #333; margin-bottom: 20px; }
+        label { font-weight: bold; color: #555; display: block; margin-top: 10px; margin-bottom: 5px; }
+        input[type="text"], input[type="number"], select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
+        
+        .item-list { background: #f9f9f9; padding: 15px; border-radius: 10px; margin: 15px 0; border: 1px solid #eee; }
+        .addon-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; cursor: pointer; font-size: 15px; }
+        .addon-item input { width: 18px; height: 18px; cursor: pointer; }
+
+        .total-box { background: #2d3436; color: #fab1a0; text-align: center; padding: 20px; font-size: 26px; font-weight: bold; border-radius: 10px; margin: 20px 0; border: 2px solid #fab1a0; }
+        
+        button { width: 100%; padding: 15px; background: #0984e3; color: white; border: none; border-radius: 8px; font-size: 17px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #74b9ff; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2>Kasir Studio</h2>
-    <input type="text" id="nama" placeholder="Nama Customer" required>
-    <input type="number" id="nowa" placeholder="Nomor WA (Contoh: 0812...)">
+    
+    <label>Nama Customer:</label>
+    <input type="text" id="nama" placeholder="Contoh: Bayu" required>
+    
+    <label>Nomor WhatsApp:</label>
+    <input type="number" id="nowa" placeholder="0812345xxx">
     
     <label>Pilih Tema:</label>
     <select id="tema">
-        <option>Balloons</option><option>Tahanan</option><option>Chill N Fun</option>
-        <option>Cowboy</option><option>Pool Party</option><option>Reastic Claw</option>
-        <option>Reastic Market</option><option>Warna</option>
+        <option>Balloons</option>
+        <option>Tahanan</option>
+        <option>Chill N Fun</option>
+        <option>Cowboy</option>
+        <option>Pool Party</option>
+        <option>Reastic Claw</option>
+        <option>Reastic Market</option>
+        <option>Warna</option>
     </select>
 
-    <label>Pilih Paket:</label>
+    <label>Pilih Paket & Waktu:</label>
     <select id="paket" onchange="hitung()">
         <option value="0">-- Pilih Paket --</option>
         <option value="30000">Couple - 10 Menit (30k)</option>
@@ -38,75 +54,90 @@
         <option value="70000">Ramean - 20 Menit (70k)</option>
     </select>
 
+    <label>Tambahan (Add-ons):</label>
     <div class="item-list">
-        <div class="item-list">
-        <label style="display: flex; align-items: center; gap: 8px;">
-            <input type="checkbox" class="addon" value="10000" data-name="Reguler" onchange="hitung()"> Reguler (+10k)
-        </label>
-        <label style="display: flex; align-items: center; gap: 8px;">
-            <input type="checkbox" class="addon" value="30000" data-name="Jumbo" onchange="hitung()"> Jumbo (+30k)
-        </label>
-        <label style="display: flex; align-items: center; gap: 8px;">
-            <input type="checkbox" class="addon" value="25000" data-name="Roll Film" onchange="hitung()"> Roll Film (+25k)
-        </label>
-        <label style="display: flex; align-items: center; gap: 8px;">
-            <input type="checkbox" class="addon" value="25000" data-name="Ganci" onchange="hitung()"> Ganci (+25k)
-        </label>
+        <label class="addon-item"><input type="checkbox" class="addon" value="10000" data-name="Reguler" onchange="hitung()"> Reguler (+10k)</label>
+        <label class="addon-item"><input type="checkbox" class="addon" value="30000" data-name="Jumbo" onchange="hitung()"> Jumbo (+30k)</label>
+        <label class="addon-item"><input type="checkbox" class="addon" value="25000" data-name="Roll Film" onchange="hitung()"> Roll Film (+25k)</label>
+        <label class="addon-item"><input type="checkbox" class="addon" value="25000" data-name="Ganci" onchange="hitung()"> Ganci (+25k)</label>
     </div>
 
     <div class="total-box" id="displayTotal">Rp 0</div>
+    
     <button id="btnSimpan" onclick="kirimData()">Simpan & Kirim ke Sheet</button>
 </div>
 
 <script>
-    // MASUKKAN URL WEB APP ANDA DI SINI
-    const SCRIPT_URL = https://script.google.com/macros/s/AKfycbxcgDguxYwbv0T24LDpQHp2BhU2VtUcvPZRC5Nbw4SrDrKtZrP98-pvE1eGqjeChdqo2Q/exec;
+    // URL Web App Google yang sudah Anda berikan
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxcgDguxYwbv0T24LDpQHp2BhU2VtUcvPZRC5Nbw4SrDrKtZrP98-pvE1eGqjeChdqo2Q/exec";
 
     function hitung() {
-        let paket = document.getElementById('paket').value;
-        let total = parseInt(paket) || 0; // Jika paket belum dipilih, anggap 0
-        
-        document.querySelectorAll('.addon:checked').forEach(i => {
-            total += parseInt(i.value);
+        let paketVal = document.getElementById('paket').value;
+        let total = parseInt(paketVal) || 0;
+
+        // Hitung semua checkbox yang dicentang
+        let addons = document.querySelectorAll('.addon:checked');
+        addons.forEach(function(item) {
+            total += parseInt(item.value) || 0;
         });
-        
+
+        // Update teks harga di kotak hitam
         document.getElementById('displayTotal').innerText = "Rp " + total.toLocaleString('id-ID');
         return total;
-    }
     }
 
     async function kirimData() {
         const btn = document.getElementById('btnSimpan');
-        const data = {
-            nama: document.getElementById('nama').value,
-            nowa: document.getElementById('nowa').value,
-            tema: document.getElementById('tema').value,
-            paket: document.getElementById('paket').options[document.getElementById('paket').selectedIndex].text,
-            tambahan: Array.from(document.querySelectorAll('.addon:checked')).map(i => i.dataset.name).join(", "),
-            total: hitung()
-        };
-
-        if (!data.nama || data.paket.includes("--")) {
-            alert("Nama dan Paket harus diisi!");
+        const nama = document.getElementById('nama').value;
+        const nowa = document.getElementById('nowa').value;
+        const tema = document.getElementById('tema').value;
+        const paketSelect = document.getElementById('paket');
+        const paketTeks = paketSelect.options[paketSelect.selectedIndex].text;
+        
+        if (!nama || paketSelect.value === "0") {
+            alert("Nama dan Paket wajib diisi!");
             return;
         }
 
+        let tambahanArr = [];
+        document.querySelectorAll('.addon:checked').forEach(i => tambahanArr.push(i.dataset.name));
+        let tambahanTeks = tambahanArr.length > 0 ? tambahanArr.join(", ") : "-";
+
+        const totalAkhir = hitung();
+
+        const data = {
+            nama: nama,
+            nowa: nowa,
+            tema: tema,
+            paket: paketTeks,
+            tambahan: tambahanTeks,
+            total: totalAkhir
+        };
+
         btn.disabled = true;
-        btn.innerText = "Mengirim...";
+        btn.innerText = "Mengirim data...";
 
         try {
+            // Proses kirim ke Google Sheets
             await fetch(SCRIPT_URL, {
                 method: "POST",
+                mode: "no-cors", 
                 body: JSON.stringify(data)
             });
-            alert("Data Berhasil Disimpan ke Google Sheets!");
-            location.reload(); // Refresh form
+            
+            alert("SUKSES! Data bayu sudah masuk ke Google Sheets.");
+            window.location.reload(); 
         } catch (error) {
-            alert("Gagal mengirim data. Pastikan URL Script benar.");
+            console.error(error);
+            alert("Gagal mengirim. Pastikan internet aktif.");
             btn.disabled = false;
             btn.innerText = "Simpan & Kirim ke Sheet";
         }
     }
+
+    // Jalankan fungsi hitung saat awal agar Rp 0 muncul benar
+    window.onload = hitung;
 </script>
+
 </body>
 </html>
